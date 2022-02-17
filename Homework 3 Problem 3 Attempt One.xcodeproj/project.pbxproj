@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		522DF55A27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */; };
+		522DF55B27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */; };
+		522DF55C27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */; };
+		522DF55D27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */; };
+		522DF55F27BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
+		522DF56027BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
+		522DF56127BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
+		522DF56227BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
 		D2384D8525BFC5D30082D98A /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D8425BFC5D30082D98A /* Tests_iOS.swift */; };
 		D2384D9025BFC5D30082D98A /* Tests_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D8F25BFC5D30082D98A /* Tests_macOS.swift */; };
 		D2384D9225BFC5D30082D98A /* Test_PlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D6925BFC5D20082D98A /* Test_PlotApp.swift */; };
@@ -71,12 +79,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapIntegral.swift; sourceTree = "<group>"; };
+		522DF55E27BEDF34009B33D9 /* BoundingBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundingBox.swift; sourceTree = "<group>"; };
 		D2384D6925BFC5D20082D98A /* Test_PlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test_PlotApp.swift; sourceTree = "<group>"; };
 		D2384D6A25BFC5D20082D98A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D2384D6B25BFC5D30082D98A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D2384D7025BFC5D30082D98A /* Test Plot Threaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Test Plot Threaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2384D7025BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Homework 3 Problem 3 Attempt One.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2384D7325BFC5D30082D98A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D2384D7825BFC5D30082D98A /* Test Plot Threaded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Test Plot Threaded.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2384D7825BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Homework 3 Problem 3 Attempt One.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2384D7A25BFC5D30082D98A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D2384D7B25BFC5D30082D98A /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
 		D2384D8025BFC5D30082D98A /* Tests iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tests iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -158,6 +168,8 @@
 				D2384DAF25BFC5E60082D98A /* operators.swift */,
 				D2384DB025BFC5E60082D98A /* CalculatePlotData.swift */,
 				D2384DB125BFC5E60082D98A /* TextView.swift */,
+				522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */,
+				522DF55E27BEDF34009B33D9 /* BoundingBox.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -165,8 +177,8 @@
 		D2384D7125BFC5D30082D98A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2384D7025BFC5D30082D98A /* Test Plot Threaded.app */,
-				D2384D7825BFC5D30082D98A /* Test Plot Threaded.app */,
+				D2384D7025BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */,
+				D2384D7825BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */,
 				D2384D8025BFC5D30082D98A /* Tests iOS.xctest */,
 				D2384D8B25BFC5D30082D98A /* Tests macOS.xctest */,
 			);
@@ -218,9 +230,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D2384D6F25BFC5D30082D98A /* Test Plot Threaded (iOS) */ = {
+		D2384D6F25BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D2384D9A25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Test Plot Threaded (iOS)" */;
+			buildConfigurationList = D2384D9A25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Homework 3 Problem 3 Attempt One (iOS)" */;
 			buildPhases = (
 				D2384D6C25BFC5D30082D98A /* Sources */,
 				D2384D6D25BFC5D30082D98A /* Frameworks */,
@@ -230,17 +242,17 @@
 			);
 			dependencies = (
 			);
-			name = "Test Plot Threaded (iOS)";
+			name = "Homework 3 Problem 3 Attempt One (iOS)";
 			packageProductDependencies = (
 				D2384DF425BFC6E20082D98A /* CorePlot */,
 			);
 			productName = "Test Plot (iOS)";
-			productReference = D2384D7025BFC5D30082D98A /* Test Plot Threaded.app */;
+			productReference = D2384D7025BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D2384D7725BFC5D30082D98A /* Test Plot Threaded (macOS) */ = {
+		D2384D7725BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D2384D9D25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Test Plot Threaded (macOS)" */;
+			buildConfigurationList = D2384D9D25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Homework 3 Problem 3 Attempt One (macOS)" */;
 			buildPhases = (
 				D2384D7425BFC5D30082D98A /* Sources */,
 				D2384D7525BFC5D30082D98A /* Frameworks */,
@@ -250,12 +262,12 @@
 			);
 			dependencies = (
 			);
-			name = "Test Plot Threaded (macOS)";
+			name = "Homework 3 Problem 3 Attempt One (macOS)";
 			packageProductDependencies = (
 				D2384DED25BFC6CB0082D98A /* CorePlot */,
 			);
 			productName = "Test Plot (macOS)";
-			productReference = D2384D7825BFC5D30082D98A /* Test Plot Threaded.app */;
+			productReference = D2384D7825BFC5D30082D98A /* Homework 3 Problem 3 Attempt One.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D2384D7F25BFC5D30082D98A /* Tests iOS */ = {
@@ -325,7 +337,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D2384D6725BFC5D20082D98A /* Build configuration list for PBXProject "Test Plot Threaded" */;
+			buildConfigurationList = D2384D6725BFC5D20082D98A /* Build configuration list for PBXProject "Homework 3 Problem 3 Attempt One" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -341,8 +353,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D2384D6F25BFC5D30082D98A /* Test Plot Threaded (iOS) */,
-				D2384D7725BFC5D30082D98A /* Test Plot Threaded (macOS) */,
+				D2384D6F25BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (iOS) */,
+				D2384D7725BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (macOS) */,
 				D2384D7F25BFC5D30082D98A /* Tests iOS */,
 				D2384D8A25BFC5D30082D98A /* Tests macOS */,
 			);
@@ -390,7 +402,9 @@
 				D2384D9425BFC5D30082D98A /* ContentView.swift in Sources */,
 				D2384DCC25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DC825BFC5E60082D98A /* operators.swift in Sources */,
+				522DF55F27BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384DC425BFC5E60082D98A /* TextExportDocument.swift in Sources */,
+				522DF55A27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC025BFC5E60082D98A /* PlotDataClass.swift in Sources */,
 				D2384DB825BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384D9225BFC5D30082D98A /* Test_PlotApp.swift in Sources */,
@@ -407,7 +421,9 @@
 				D2384D9525BFC5D30082D98A /* ContentView.swift in Sources */,
 				D2384DCD25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DC925BFC5E60082D98A /* operators.swift in Sources */,
+				522DF56027BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384DC525BFC5E60082D98A /* TextExportDocument.swift in Sources */,
+				522DF55B27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC125BFC5E60082D98A /* PlotDataClass.swift in Sources */,
 				D2384DB925BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384D9325BFC5D30082D98A /* Test_PlotApp.swift in Sources */,
@@ -424,8 +440,10 @@
 				D2384DBA25BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384DCE25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DCA25BFC5E60082D98A /* operators.swift in Sources */,
+				522DF56127BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384D8525BFC5D30082D98A /* Tests_iOS.swift in Sources */,
 				D2384DC225BFC5E60082D98A /* PlotDataClass.swift in Sources */,
+				522DF55C27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC625BFC5E60082D98A /* TextExportDocument.swift in Sources */,
 				D2384DD225BFC5E60082D98A /* TextView.swift in Sources */,
 				D2384DB625BFC5E60082D98A /* ChangingPlotParameters.swift in Sources */,
@@ -440,8 +458,10 @@
 				D2384DBB25BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384DCF25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DCB25BFC5E60082D98A /* operators.swift in Sources */,
+				522DF56227BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384D9025BFC5D30082D98A /* Tests_macOS.swift in Sources */,
 				D2384DC325BFC5E60082D98A /* PlotDataClass.swift in Sources */,
+				522DF55D27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC725BFC5E60082D98A /* TextExportDocument.swift in Sources */,
 				D2384DD325BFC5E60082D98A /* TextView.swift in Sources */,
 				D2384DB725BFC5E60082D98A /* ChangingPlotParameters.swift in Sources */,
@@ -454,12 +474,12 @@
 /* Begin PBXTargetDependency section */
 		D2384D8225BFC5D30082D98A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D2384D6F25BFC5D30082D98A /* Test Plot Threaded (iOS) */;
+			target = D2384D6F25BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (iOS) */;
 			targetProxy = D2384D8125BFC5D30082D98A /* PBXContainerItemProxy */;
 		};
 		D2384D8D25BFC5D30082D98A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D2384D7725BFC5D30082D98A /* Test Plot Threaded (macOS) */;
+			target = D2384D7725BFC5D30082D98A /* Homework 3 Problem 3 Attempt One (macOS) */;
 			targetProxy = D2384D8C25BFC5D30082D98A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -582,7 +602,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -591,7 +611,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiIIT.Test-Plot";
-				PRODUCT_NAME = "Test Plot Threaded";
+				PRODUCT_NAME = "Homework 3 Problem 3 Attempt One";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -604,7 +624,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -613,7 +633,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiIIT.Test-Plot";
-				PRODUCT_NAME = "Test Plot Threaded";
+				PRODUCT_NAME = "Homework 3 Problem 3 Attempt One";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -629,7 +649,7 @@
 				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = macOS/Info.plist;
@@ -639,7 +659,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiIIT.Test-Plot";
-				PRODUCT_NAME = "Test Plot Threaded";
+				PRODUCT_NAME = "Homework 3 Problem 3 Attempt One";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -653,7 +673,7 @@
 				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = macOS/Info.plist;
@@ -663,7 +683,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiIIT.Test-Plot";
-				PRODUCT_NAME = "Test Plot Threaded";
+				PRODUCT_NAME = "Homework 3 Problem 3 Attempt One";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
@@ -674,7 +694,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Tests iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -696,7 +716,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Tests iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -720,7 +740,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Tests macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -742,7 +762,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = V59RVGUYZD;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Tests macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -761,7 +781,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D2384D6725BFC5D20082D98A /* Build configuration list for PBXProject "Test Plot Threaded" */ = {
+		D2384D6725BFC5D20082D98A /* Build configuration list for PBXProject "Homework 3 Problem 3 Attempt One" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D2384D9825BFC5D30082D98A /* Debug */,
@@ -770,7 +790,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D2384D9A25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Test Plot Threaded (iOS)" */ = {
+		D2384D9A25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Homework 3 Problem 3 Attempt One (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D2384D9B25BFC5D30082D98A /* Debug */,
@@ -779,7 +799,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D2384D9D25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Test Plot Threaded (macOS)" */ = {
+		D2384D9D25BFC5D30082D98A /* Build configuration list for PBXNativeTarget "Homework 3 Problem 3 Attempt One (macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D2384D9E25BFC5D30082D98A /* Debug */,
