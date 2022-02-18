@@ -159,6 +159,7 @@
 			children = (
 				D2384D6925BFC5D20082D98A /* Test_PlotApp.swift */,
 				D2384D6A25BFC5D20082D98A /* ContentView.swift */,
+				522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */,
 				D2384DFE25BFE4390082D98A /* PlotClass.swift */,
 				D2384D6B25BFC5D30082D98A /* Assets.xcassets */,
 				D2384DAA25BFC5E60082D98A /* ChangingPlotParameters.swift */,
@@ -168,7 +169,6 @@
 				D2384DAF25BFC5E60082D98A /* operators.swift */,
 				D2384DB025BFC5E60082D98A /* CalculatePlotData.swift */,
 				D2384DB125BFC5E60082D98A /* TextView.swift */,
-				522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */,
 				522DF55E27BEDF34009B33D9 /* BoundingBox.swift */,
 			);
 			path = Shared;

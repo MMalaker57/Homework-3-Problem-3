@@ -260,20 +260,34 @@ struct ContentView: View {
     
 //BEGIN FUNCTION BLOCK
     func calculateOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, stepSize: Double) async -> [(R: Double, integral: Double)]{
+        plotDataList.removeAll()
         var dataToPlot: [plotDataType] = []
         var plotData: [(Double, Double)] = []
-        var plotDataLarge: [(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
         
         setupPlotDataModel(selector: 0)
-        for i in stride(from: 0, through: R, by: stepSize){
+        
+        let plotDataLarge = await withTaskGroup(of: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)])).self, returning: [(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))].self, body: {taskGroup in
             
-            let calculatedIntegralMass = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: i, maximumGuesses: maximumGuesses)
-            plotDataLarge.append((r: i, calculatedData: calculatedIntegralMass))
-            let calculatedIntegral = calculatedIntegralMass.integral
-            let dataPoint: plotDataType = [.X: Double(i), .Y: (calculatedIntegral)]
-            dataToPlot.append(contentsOf: [dataPoint])
+            for i in stride(from: 0, through: R, by: stepSize){
+                taskGroup.addTask{
+                    let calculatedIntegralMass = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: i, maximumGuesses: maximumGuesses)
+                let plotDataLargeAtIndex = ((r: i, calculatedData: calculatedIntegralMass))
+                let calculatedIntegral = calculatedIntegralMass.integral
+//                let dataPoint: plotDataType = [.X: Double(i), .Y: (calculatedIntegral)]
+//                dataToPlot.append(contentsOf: [dataPoint])
+                print(i)
+                return(plotDataLargeAtIndex)
+                }
+            }
+            //Interim
+            var interimResults:[(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
+            for await result in taskGroup{
+                interimResults.append(result)
+            }
+            interimResults = interimResults.sorted(by: {$0.r < $1.r})
+            return interimResults
             
-        }
+        })
 
         for i in plotDataLarge{
             plotData.append((i.r, i.calculatedData.integral))

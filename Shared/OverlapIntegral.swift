@@ -43,7 +43,7 @@ class overlapIntegral: NSObject, ObservableObject  {
             
             for i in stride(from: 1, through: maximumGuesses, by: 1){
                 
-                taskGroup.addTask{
+                taskGroup.addTask{ [self] in
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     var secondPoint = 0.0
                     var isUnderCurve = false
@@ -51,11 +51,24 @@ class overlapIntegral: NSObject, ObservableObject  {
                     point.yCoord = Double.random(in: lowerYBound...upperYBound)
                     point.zCoord = Double.random(in: lowerZBound...upperZBound)
 //                    print(point)
-                    let r1 = sqrt(pow(point.xCoord,2)+pow(point.yCoord,2)+pow(point.zCoord,2))
-                    let r2 = sqrt(pow(R-point.xCoord,2)+pow(point.yCoord,2)+pow(point.zCoord,2))
+                    var xtemp1 = 0.0
+                    var xtemp2 = 0.0
+                    if(point.xCoord > 0){
+                        xtemp1 = (R/2) + point.xCoord
+                        xtemp2 = (R/2) - point.xCoord
+                    }
+                    else{
+                        if(point.xCoord < 0){
+                            xtemp1 = (R/2) - point.xCoord
+                            xtemp2 = (R/2) + point.xCoord
+                            
+                        }
+                    }
+                    let r1 = self.convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord).r
+                    let r2 = self.convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord).r
 //                    print(-1.0*r1/aNaught)
 //                    print(exp(-1.0*r1/aNaught))
-                    let probabilityAtPoint = (1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*r1)/aNaught))*(exp((-1.0*r2/aNaught)))
+                    let probabilityAtPoint = (exp((-1.0*r1)/aNaught))*(exp((-1.0*r2/aNaught)))
 //                    print(probabilityAtPoint)
                     secondPoint = Double.random(in: 0...(1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*R/aNaught))))
 //                    print((1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*R/aNaught))))
@@ -77,7 +90,7 @@ class overlapIntegral: NSObject, ObservableObject  {
             
         })
         
-        
+        var sumOfP: Double = 0.0
         for i in data{
             r1List.append(i.r1)
             r2List.append(i.r2)
@@ -89,14 +102,11 @@ class overlapIntegral: NSObject, ObservableObject  {
             else{
                 newPointsAbove.append((r1Coord: i.r1, r2Coord: i.r2, Probability: i.probability))
             }
+            sumOfP += i.probability
         }
-        let r1Min = Double(r1List.min() ?? -1.0)
-        let r1Max = Double(r1List.max() ?? 1.0)
-        let r2Min = Double(r2List.min() ?? -1.0)
-        let r2Max = Double(r2List.max() ?? 1.0)
-        
+        sumOfP *= (1/(Double.pi*pow(aNaught,3)))
 
-        integral = Double(pointsBelow)/Double(maximumGuesses)*box.cuboidVolume(numberOfSides: 3, sideOneDimension: r1Max-r1Min, sideTwoDimension: r2Max-r2Min, sideThreeDimension: (1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*R/aNaught))))
+        integral = Double(sumOfP)/Double(maximumGuesses)*box.cuboidVolume(numberOfSides: 3, sideOneDimension: upperXBound - lowerXBound, sideTwoDimension: upperYBound - lowerYBound, sideThreeDimension: upperZBound - lowerZBound)
         
         
         return((integral: integral, belowPoints: newPointsBelow, abovePoints: newPointsAbove))
@@ -150,6 +160,43 @@ class overlapIntegral: NSObject, ObservableObject  {
     func calculateReal(R: Double)->Double{
         let aNaught = 0.529
         return exp(-1.0*Double(R)/aNaught)*(1+(R/aNaught)+(pow(R/aNaught,2)/3))
+        
+    }
+    
+    func convertToSpherical(x: Double, y: Double, z: Double) -> (r: Double, phi: Double, theta: Double){
+        let r = sqrt(pow(x,2)+pow(y,2)+pow(z,2))
+        var phi = 0.0
+        if(x == 0.0 && y == 0.0){
+            phi = 0.0
+        }
+        else{
+            if(x == 0.0 && y < 0.0){
+                phi = -1.0*Double.pi/2.0
+            }
+            else{
+                if(x == 0.0 && y > 0.0){
+                    phi = Double.pi/2.0
+                }
+                else{
+                    if(x < 0.0 && y < 0.0){
+                        phi = atan(y/x) - Double.pi
+                    }
+                    else{
+                        if(x < 0.0 && y >= 0.0){
+                            phi = atan(y/x) - Double.pi
+                        }
+                        else{
+                            if(x > 0){
+                                phi = atan(y/x)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        let theta = acos(z/r)
+        return((r: r, phi: phi, theta: theta))
         
     }
     
