@@ -36,7 +36,8 @@ struct ContentView: View {
     @EnvironmentObject var plotData :PlotClass
     
     @ObservedObject private var calculator = CalculatePlotData()
-    @ObservedObject var integral = overlapIntegral()
+    @ObservedObject var plotDataModel = PlotDataClass(fromLine: true)
+    @ObservedObject var overlap = overlapIntegral()
     @State var isChecked:Bool = false
     @State var tempInput = ""
     
@@ -58,21 +59,18 @@ struct ContentView: View {
     @State var stepSizeDouble = 0.0
     @State var stepSizeString = ""
     
-    @State var deltaXDouble = 0.0
-    @State var deltaXString = ""
-    @State var deltaYDouble = 0.0
-    @State var deltaYString = ""
-    @State var deltaZDouble = 0.0
-    @State var deltaZString = ""
+    @State var rDouble = 0.0
+    @State var rString = ""
     @State var maximumGuesses: UInt64 = 1
     @State var maximumGuessesString = ""
     
-    
+    @State var plotDataList: [(Double, Double)] = []
+    @State var realDataList: [(Double, Double)] = []
     
     
     var body: some View {
         
-        VStack{
+        HStack{
       
             CorePlot(dataForPlot: $plotData.plotArray[selector].plotData, changingPlotParameters: $plotData.plotArray[selector].changingPlotParameters)
                 .setPlotPadding(left: 10)
@@ -83,43 +81,22 @@ struct ContentView: View {
             
             Divider()
             VStack{
-                HStack{
-                    Text("Input x Lower Bound")
-                        .font(.callout)
-                        .bold()
-                    TextField("", text: $lowerXBoundString, onCommit: {lowerXBoundDouble = Double(lowerXBoundString) ?? -1.0})
-                        .padding()
-                }
-                
+            VStack{
+               
                 HStack{
                     Text("Input x Upper Bound")
                         .font(.callout)
                         .bold()
-                    TextField("", text: $upperXBoundString, onCommit: {upperXBoundDouble = Double(upperXBoundString) ?? 1.0})
+                    TextField("", text: $upperXBoundString, onCommit: {upperXBoundDouble = Double(upperXBoundString) ?? 1.0;  lowerXBoundDouble = -1.0*upperXBoundDouble})
                         .padding()
                 }
                 
-                HStack{
-                    Text("Input y Lower Bound")
-                        .font(.callout)
-                        .bold()
-                    TextField("", text: $lowerYBoundString, onCommit: {lowerYBoundDouble = Double(lowerYBoundString) ?? -1.0})
-                        .padding()
-                }
                 
                 HStack{
                     Text("Input y Upper Bound")
                         .font(.callout)
                         .bold()
-                    TextField("", text: $upperYBoundString, onCommit: {upperYBoundDouble = Double(upperYBoundString) ?? 1.0})
-                        .padding()
-                }
-                
-                HStack{
-                    Text("Input z Lower Bound")
-                        .font(.callout)
-                        .bold()
-                    TextField("", text: $lowerZBoundString, onCommit: {lowerZBoundDouble = Double(lowerZBoundString) ?? -1.0})
+                        TextField("", text: $upperYBoundString, onCommit: {upperYBoundDouble = Double(upperYBoundString) ?? 1.0; lowerYBoundDouble = -1.0*upperYBoundDouble})
                         .padding()
                 }
                 
@@ -127,42 +104,64 @@ struct ContentView: View {
                     Text("Input z Upper Bound")
                         .font(.callout)
                         .bold()
-                    TextField("", text: $upperZBoundString, onCommit: {upperZBoundDouble = Double(upperZBoundString) ?? 1.0})
+                    TextField("", text: $upperZBoundString, onCommit: {upperZBoundDouble = Double(upperZBoundString) ?? 1.0; lowerZBoundDouble = -1.0*upperZBoundDouble})
                         .padding()
                 }
             }
             
             VStack{
                 HStack{
-                    Text("Input x Displacement")
+                    Text("Input Distance Between Sources")
                         .font(.callout)
                         .bold()
-                    TextField("", text: $deltaXString, onCommit: {deltaXDouble = Double(deltaXString) ?? 0.0})
+                    TextField("", text: $rString, onCommit: {rDouble = Double(rString) ?? 0.0})
+                        .padding()
+                }
+                
+                HStack{
+                    Text("Input Guesses Per Point")
+                        .font(.callout)
+                        .bold()
+                    TextField("", text: $maximumGuessesString, onCommit: {maximumGuesses = UInt64(maximumGuessesString) ?? 1})
+                        .padding()
+                }
+                
+                HStack{
+                    Text("Input Step Size")
+                        .font(.callout)
+                        .bold()
+                    TextField("", text: $stepSizeString, onCommit: {stepSizeDouble = Double(stepSizeString) ?? 0.1})
                         .padding()
                 }
             }
-            HStack{
-                Text("Input y Displacement")
-                    .font(.callout)
-                    .bold()
-                TextField("", text: $deltaYString, onCommit: {deltaXDouble = Double(deltaXString) ?? 0.0})
-                    .padding()
-            }
-        
             
             HStack{
                 Button("Calculate Overlap", action: {
                     
                     Task.init{
                     self.selector = 0
-                    await self.calculate()
+                        plotDataList = await self.calculateOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble); realDataList = self.calculateRealValue(R: rDouble, stepSize: stepSizeDouble)
                     }
-                }
-                
-                
-                )
+                })
                 .padding()
+                Button("Draw", action: {
+                    
+                    Task.init{
+                    self.selector = 0
+                        await self.calculate();
+                        self.plotData.objectWillChange.send()
+                    }
+                })
+                Button("Draw Real", action: {
+                    
+                    Task.init{
+                    self.selector = 1
+                        await self.calculate2();
+                        self.plotData.objectWillChange.send()
+                    }
+                })
                 
+            }
             }
         }
             
@@ -186,6 +185,7 @@ struct ContentView: View {
        // calculator.plotDataModel = self.plotData.plotArray[0]
         
         setupPlotDataModel(selector: 0)
+        overlap.plotDataModel = self.plotDataModel
         
      //   Task{
             
@@ -202,7 +202,8 @@ struct ContentView: View {
         
         
         //Calculate the new plotting data and place in the plotDataModel
-        await calculator.ploteToTheMinusX()
+        
+        await calculator.plotFunction(dataToPlot: plotDataList)
         
                     // This forces a SwiftUI update. Force a SwiftUI update.
         await self.plotData.objectWillChange.send()
@@ -242,7 +243,7 @@ struct ContentView: View {
         
         
         //Calculate the new plotting data and place in the plotDataModel
-        await calculator.plotYEqualsX()
+        await calculator.plotFunction(dataToPlot: realDataList)
                   
                     // This forces a SwiftUI update. Force a SwiftUI update.
         await self.plotData.objectWillChange.send()
@@ -258,33 +259,45 @@ struct ContentView: View {
     }
     
 //BEGIN FUNCTION BLOCK
-    func calculateOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, deltaX: Double, deltaY: Double, deltaZ: Double, maximumGuesses: UInt64, stepSize: Double) async -> (integrals: [Double], belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]){
+    func calculateOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, stepSize: Double) async -> [(R: Double, integral: Double)]{
+        var dataToPlot: [plotDataType] = []
+        var plotData: [(Double, Double)] = []
+        var plotDataLarge: [(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
         
-        let R = sqrt(pow(deltaX,2) + pow(deltaY,2) + pow(deltaZ,2))
-        let xStep = stepSize*(deltaX/sqrt(pow(deltaX,2)+pow(deltaY,2)+pow(deltaZ,2)))
-        let yStep = stepSize*(deltaY/sqrt(pow(deltaX,2)+pow(deltaY,2)+pow(deltaZ,2)))
-        let zStep = stepSize*(deltaZ/sqrt(pow(deltaX,2)+pow(deltaY,2)+pow(deltaZ,2)))
-        let integralList = await withTaskGroup(of: Double, returning: [Double].self, body: {taskGroup in
-        let numberOfSteps = Int(R/stepSize)
+        setupPlotDataModel(selector: 0)
+        for i in stride(from: 0, through: R, by: stepSize){
             
-            for i in 0...numberOfSteps{
-                traskGroup.addTask{
-                    let integralValue = integral.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, deltaX: deltaX, deltaY: deltaY, deltaZ: deltaZ, maximumGuesses: maximumGuesses)
-                    
-                    
-                }
-            }
+            let calculatedIntegralMass = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: i, maximumGuesses: maximumGuesses)
+            plotDataLarge.append((r: i, calculatedData: calculatedIntegralMass))
+            let calculatedIntegral = calculatedIntegralMass.integral
+            let dataPoint: plotDataType = [.X: Double(i), .Y: (calculatedIntegral)]
+            dataToPlot.append(contentsOf: [dataPoint])
             
-            
-            
-            
-        })
-        
-        
-        
-        
+        }
+
+        for i in plotDataLarge{
+            plotData.append((i.r, i.calculatedData.integral))
+            print(i.calculatedData.integral)
+        }
+//        plotDataModel.appendData(dataPoint: dataToPlot)
+        return plotData
     }
    
+    func calculateRealValue(R: Double, stepSize: Double) -> [(Double, Double)]{
+//        setupPlotDataModel(selector: 1)
+        var tempData: [(Double, Double)] = []
+        var dataToPlot: [plotDataType] = []
+        for r in stride(from: 0, through: R, by: stepSize){
+            let calculatedIntegral = overlap.calculateReal(R: r)
+            let dataPoint: plotDataType = [.X: Double(r), .Y: (calculatedIntegral)]
+            dataToPlot.append(contentsOf: [dataPoint])
+            tempData.append((r, calculatedIntegral))
+        }
+        return tempData
+    }
+    
+    
+    
 }
 
 
