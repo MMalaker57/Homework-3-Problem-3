@@ -21,7 +21,10 @@ import Foundation
 class overlapIntegral: NSObject, ObservableObject  {
     
     var plotDataModel: PlotDataClass? = nil
-    func calculate1sOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64) async->(integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]){
+    typealias integrationFunctionHandler = (_ inputs: (r: Double, phi: Double, theta: Double))-> Double
+    
+    //THIS NEEDS TO TAKE TWO ARBITRARY FUNCTIONS
+    func calculate1sOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, psi1: integrationFunctionHandler, psi2: integrationFunctionHandler) -> (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]){
         let box = Bounding_Box()
 //        var numberOfGuesses = UInt64(0)
         let aNaught = 0.529
@@ -31,19 +34,15 @@ class overlapIntegral: NSObject, ObservableObject  {
         var newPointsAbove: [(r1Coord: Double, r2Coord: Double, Probability: Double)] = []
         var r1List: [Double] = []
         var r2List: [Double] = []
-        
+      
        
         
         //In order to do this integral, we need to generate a random point within the set bounds passed as arguments. We do not need to check the horizontal coordinates because the random generation is defined to be within the bounds, but the vertical coordinate does need to be checked. The horizontal is generated because the vertical depends on the horizontal
-        
-        
-        //This will be really slow, so we will thread it
-        
-        let data = await withTaskGroup(of: (r1: Double, r2: Double, probability: Double, status: Bool).self, returning: [(r1: Double, r2: Double, probability: Double, status: Bool)].self, body: {taskGroup in
             
+        
+        var data: [(probability: Double, x: Double, y: Double, z: Double)] = []
             for i in stride(from: 1, through: maximumGuesses, by: 1){
                 
-                taskGroup.addTask{ [self] in
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     var secondPoint = 0.0
                     var isUnderCurve = false
@@ -51,8 +50,12 @@ class overlapIntegral: NSObject, ObservableObject  {
                     point.yCoord = Double.random(in: lowerYBound...upperYBound)
                     point.zCoord = Double.random(in: lowerZBound...upperZBound)
 //                    print(point)
+                
+                
                     var xtemp1 = 0.0
                     var xtemp2 = 0.0
+                
+                
                     if(point.xCoord > 0){
                         xtemp1 = (R/2) + point.xCoord
                         xtemp2 = (R/2) - point.xCoord
@@ -64,45 +67,18 @@ class overlapIntegral: NSObject, ObservableObject  {
                             
                         }
                     }
-                    let r1 = self.convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord).r
-                    let r2 = self.convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord).r
-//                    print(-1.0*r1/aNaught)
-//                    print(exp(-1.0*r1/aNaught))
-                    let probabilityAtPoint = (exp((-1.0*r1)/aNaught))*(exp((-1.0*r2/aNaught)))
-//                    print(probabilityAtPoint)
-                    secondPoint = Double.random(in: 0...(1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*R/aNaught))))
-//                    print((1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*R/aNaught))))
-                    if(secondPoint < probabilityAtPoint){
-                        isUnderCurve = true
-                        
-                    }
-
-                    return((r1: r1, r2: r2, probability: probabilityAtPoint, status: isUnderCurve))
                     
-                }
+                    let probabilityAtPoint = psi1(self.convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord)) * psi2(self.convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord))
+                    
+                data.append((probability: probabilityAtPoint, x: point.xCoord, y: point.yCoord, z: point.zCoord))
                 
-                }
-            var interimResults: [(r1: Double, r2: Double, probability: Double, status: Bool)] = []
-            for await result in taskGroup{
-                interimResults.append(result)
             }
-            return interimResults
             
-        })
         
         var sumOfP: Double = 0.0
         for i in data{
-            r1List.append(i.r1)
-            r2List.append(i.r2)
-//            print(i.status)
-            if(i.status){
-                pointsBelow += 1
-                newPointsBelow.append((r1Coord: i.r1, r2Coord: i.r2, Probability: i.probability))
-            }
-            else{
-                newPointsAbove.append((r1Coord: i.r1, r2Coord: i.r2, Probability: i.probability))
-            }
             sumOfP += i.probability
+            
         }
         sumOfP *= (1/(Double.pi*pow(aNaught,3)))
 
@@ -111,51 +87,85 @@ class overlapIntegral: NSObject, ObservableObject  {
         
         return((integral: integral, belowPoints: newPointsBelow, abovePoints: newPointsAbove))
         
-//        while numberOfGuesses < maximumGuesses{
-//
-//            point.xCoord = Double.random(in: lowerXBound...upperXBound)
-//            point.yCoord = Double.random(in: lowerYBound...upperYBound)
-//            point.zCoord = Double.random(in: lowerZBound...upperZBound)
-//
-//
-//            //The integral is the area under the curve, so if under the curve, we need to add it to a counter specifically for that case.
-//
-//            //The curve is our probability distribution, which is psi1*psi2
-//
-//            let r1 = sqrt(pow(point.xCoord,2)+pow(point.yCoord,2)+pow(point.zCoord,2))
-//            let r2 = sqrt(pow(R-point.xCoord,2)+pow(point.yCoord,2)+pow(point.zCoord,2))
-//            let probabilityAtPoint = (1/(Double.pi*pow(aNaught,3)))*(exp((-1.0*r1)/aNaught))*(exp((-1.0*r2/aNaught)))
-//            secondPoint = Double.random(in: 0...1)
-//            if(secondPoint < probabilityAtPoint){
-//                pointsUnderCurve += 1
-//                newPointsBelow.append((r1,r2,secondPoint))
-//            }
-//
-//            //If above the curve, do not add to below curve counter
-//            else{
-//                newPointsAbove.append((r1,r2,secondPoint))
-//            }
-//            r1List.append(r1)
-//            r2List.append(r2)
-//
-//
-//            numberOfGuesses += 1
-//        }
-    //        print(pointsUnderCurve)
-        
-        //After all points are done
-//        let r1Min = Double(r1List.min() ?? -1.0)
-//        let r1Max = Double(r1List.max() ?? 1.0)
-//        let r2Min = Double(r2List.min() ?? -1.0)
-//        let r2Max = Double(r2List.max() ?? 1.0)
-//
-//
-//        integral = Double(pointsUnderCurve/numberOfGuesses)*box.cuboidVolume(numberOfSides: 3, sideOneDimension: r1Max-r1Min, sideTwoDimension: r2Max-r2Min, sideThreeDimension: 1.0)
-//
-//        return (integral,newPointsBelow, newPointsAbove)
+
         
         
     }
+    
+    
+    
+    
+    func calculateOverlapPoints(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, psi1: integrationFunctionHandler, psi2: integrationFunctionHandler) -> (probabilityBelow: [Double], probabilityAbove: [Double], pointsBelow: [(xPoint: Double, yPoint: Double)], pointsAbove: [(xPoint: Double, yPoint: Double)]){
+        
+        //This is the same as the integral, just without the integratiom. We are trying to get the data in a nice 2d form for plotting
+        //Doing this each time is a waste of time
+        var pointsBelow: [(xPoint: Double, yPoint: Double)] = []
+        var pointsAbove: [(xPoint: Double, yPoint: Double)] = []
+        var probabilityBelow: [Double] = []
+        var probabilityAbove: [Double] = []
+        
+        var data: (probabilityBelow: [Double], probabilityAbove: [Double], pointsBelow: [(xPoint: Double, yPoint: Double)], pointsAbove: [(xPoint: Double, yPoint: Double)])
+            for i in stride(from: 1, through: 2000, by: 1){
+                
+                    var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
+                    
+                    point.xCoord = Double.random(in: lowerXBound...upperXBound)
+                    point.yCoord = Double.random(in: lowerYBound...upperYBound)
+                    point.zCoord = Double.random(in: lowerZBound...upperZBound)
+//                    print(point)
+                
+                
+                    var xtemp1 = 0.0
+                    var xtemp2 = 0.0
+                
+                
+                    if(point.xCoord > 0){
+                        xtemp1 = (R/2) + point.xCoord
+                        xtemp2 = (R/2) - point.xCoord
+                    }
+                    else{
+                        if(point.xCoord < 0){
+                            xtemp1 = (R/2) - point.xCoord
+                            xtemp2 = (R/2) + point.xCoord
+                            
+                        }
+                    }
+                    
+                    let probabilityAtPoint = psi1(self.convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord)) * psi2(self.convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord))
+                
+                var vertical = 0.0
+                if point.yCoord < 0.0{
+                    vertical = -1.0*sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
+                    
+                }
+                else{
+                    vertical = sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
+                }
+                if probabilityAtPoint < 0{
+                    pointsBelow.append((xPoint: point.xCoord, yPoint: vertical))
+                    probabilityBelow.append(probabilityAtPoint)
+                }
+                else{
+                    pointsAbove.append((xPoint: point.xCoord, yPoint: vertical))
+                    probabilityAbove.append(probabilityAtPoint)
+                }
+                    
+                
+            }
+            
+        data = (probabilityBelow, probabilityAbove, pointsBelow, pointsAbove)
+        
+        return data
+        
+
+        
+        
+    }
+    
+    
+    
+    
+    
     
     func calculateReal(R: Double)->Double{
         let aNaught = 0.529
@@ -165,40 +175,23 @@ class overlapIntegral: NSObject, ObservableObject  {
     
     func convertToSpherical(x: Double, y: Double, z: Double) -> (r: Double, phi: Double, theta: Double){
         let r = sqrt(pow(x,2)+pow(y,2)+pow(z,2))
-        var phi = 0.0
-        if(x == 0.0 && y == 0.0){
-            phi = 0.0
-        }
-        else{
-            if(x == 0.0 && y < 0.0){
-                phi = -1.0*Double.pi/2.0
-            }
-            else{
-                if(x == 0.0 && y > 0.0){
-                    phi = Double.pi/2.0
-                }
-                else{
-                    if(x < 0.0 && y < 0.0){
-                        phi = atan(y/x) - Double.pi
-                    }
-                    else{
-                        if(x < 0.0 && y >= 0.0){
-                            phi = atan(y/x) - Double.pi
-                        }
-                        else{
-                            if(x > 0){
-                                phi = atan(y/x)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        let phi = atan2(y, x)
         
         let theta = acos(z/r)
         return((r: r, phi: phi, theta: theta))
         
     }
+    func psi1s(r: Double, phi: Double, theta: Double)->Double{
+        let aNaught = 0.529
+        return exp(-1.0*r/aNaught)
+    }
     
-    
+    func psi2px(r: Double, phi: Double, theta: Double)->Double{
+        let aNaught = 0.529
+        //we have a constant multiple of 1/4sqrt(2), but calculating that each time is dumb. Double precision is just shy of 16 decimal places, so I've pre-calculated the value of 1/4sqrt(2) to that places.
+        //Ideally, it'd be best to apply this factor at the END of the integral ( it factors out ), but when the function is selectable, that is not really an option.
+        //There is ALWAYS a factor of 1/sqrt(pi*a^3), though
+        //The trig functions make this REALLY slow
+        return (r/aNaught)*exp(-1.0*r/(2*aNaught))*(0.1767766952966368)*sin(theta)*cos(phi)
+    }
 }

@@ -34,8 +34,9 @@ typealias plotDataType = [CPTScatterPlotField : Double]
 
 struct ContentView: View {
     @EnvironmentObject var plotData :PlotClass
-    
+    typealias plotDataType = [CPTScatterPlotField : Double]
     @ObservedObject private var calculator = CalculatePlotData()
+    
     @ObservedObject var plotDataModel = PlotDataClass(fromLine: true)
     @ObservedObject var overlap = overlapIntegral()
     @State var isChecked:Bool = false
@@ -66,12 +67,29 @@ struct ContentView: View {
     
     @State var plotDataList: [(Double, Double)] = []
     @State var realDataList: [(Double, Double)] = []
+    @State var func1String = "1s"
+    @State var func2String = "1s"
+        
+    @State var function1: overlapIntegral.integrationFunctionHandler
+    @State var function2: overlapIntegral.integrationFunctionHandler
+    @State var belowPointsToDraw: [(xPoint: Double, yPoint: Double)] = []
+    @State var abovePointsToDraw: [(xPoint: Double, yPoint: Double)] = []
+    @State var probabilitiesBelow: [Double] = []
+    @State var probabilitiesAbove: [Double] = []
     
     
     var body: some View {
         
+
+        
         HStack{
-      
+            Divider()
+                drawingView(redLayer:$belowPointsToDraw, blueLayer: $abovePointsToDraw)
+                    .padding()
+                    .aspectRatio(1, contentMode: .fit)
+                    .drawingGroup()
+                // Stop the window shrinking to zero.
+                Spacer()
             CorePlot(dataForPlot: $plotData.plotArray[selector].plotData, changingPlotParameters: $plotData.plotArray[selector].changingPlotParameters)
                 .setPlotPadding(left: 10)
                 .setPlotPadding(right: 10)
@@ -80,6 +98,7 @@ struct ContentView: View {
                 .padding()
             
             Divider()
+            
             VStack{
             VStack{
                
@@ -133,6 +152,17 @@ struct ContentView: View {
                     TextField("", text: $stepSizeString, onCommit: {stepSizeDouble = Double(stepSizeString) ?? 0.1})
                         .padding()
                 }
+                Picker("Psi1", selection: $func1String){
+                    Text("1s").tag("1s")
+                    Text("2px").tag("2px")
+                    
+                }
+                
+                Picker("Psi2", selection: $func2String){
+                    Text("1s").tag("1s")
+                    Text("2px").tag("2px")
+                    
+                }
             }
             
             HStack{
@@ -140,7 +170,7 @@ struct ContentView: View {
                     
                     Task.init{
                     self.selector = 0
-                        plotDataList = await self.calculateOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble); realDataList = self.calculateRealValue(R: rDouble, stepSize: stepSizeDouble)
+                        plotDataList = await self.calculateOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble); realDataList = self.calculateRealValue(R: rDouble, stepSize: stepSizeDouble);self.drawOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble)
                     }
                 })
                 .padding()
@@ -263,38 +293,75 @@ struct ContentView: View {
         plotDataList.removeAll()
         var dataToPlot: [plotDataType] = []
         var plotData: [(Double, Double)] = []
+        let NumberofThreads: UInt64 = 4
+        var plotDataLarge: [(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
         
         setupPlotDataModel(selector: 0)
         
-        let plotDataLarge = await withTaskGroup(of: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)])).self, returning: [(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))].self, body: {taskGroup in
+        //Iterate over spots
+        for r in stride(from: 0, through: R, by: stepSize){
+            print(r)
+            let guessesPerThread = maximumGuesses/NumberofThreads
             
-            for i in stride(from: 0, through: R, by: stepSize){
-                taskGroup.addTask{
-                    let calculatedIntegralMass = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: i, maximumGuesses: maximumGuesses)
-                let plotDataLargeAtIndex = ((r: i, calculatedData: calculatedIntegralMass))
-                let calculatedIntegral = calculatedIntegralMass.integral
-//                let dataPoint: plotDataType = [.X: Double(i), .Y: (calculatedIntegral)]
-//                dataToPlot.append(contentsOf: [dataPoint])
-                print(i)
-                return(plotDataLargeAtIndex)
+            //calculate integral of separation r with number of threads of tasks
+            let plotDataR = await withTaskGroup(of: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)])).self, returning: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)])).self, body: {taskGroup in
+                
+                var dataStruct: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))
+                for i in stride(from: 1, through: NumberofThreads, by: 1){
+                    taskGroup.addTask{
+                        let dataSlice = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: r, maximumGuesses: guessesPerThread, psi1: overlap.psi1s, psi2: overlap.psi1s)
+                        return((r: r, calculatedData: dataSlice))
+                    }
                 }
-            }
-            //Interim
-            var interimResults:[(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
-            for await result in taskGroup{
-                interimResults.append(result)
-            }
-            interimResults = interimResults.sorted(by: {$0.r < $1.r})
-            return interimResults
+                
+//                Interim
+                var interimResults:[(r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))] = []
+                for await result in taskGroup{
+                    interimResults.append(result)
+                }
+                dataStruct.r = interimResults[0].r
+                var tempIntegral = 0.0
+                var pointsBelowList: [(Double, Double, Double)] = []
+                var pointsAboveList: [(Double, Double, Double)] = []
+                for i in interimResults{
+                    tempIntegral += i.calculatedData.integral
+                    for j in i.calculatedData.belowPoints{
+                        pointsBelowList.append(j)
+                    }
+                    for j in i.calculatedData.abovePoints{
+                        pointsAboveList.append(j)
+                    }
+                }
+                dataStruct.calculatedData.belowPoints = pointsBelowList
+                dataStruct.calculatedData.abovePoints = pointsAboveList
+                dataStruct.calculatedData.integral = tempIntegral/Double(NumberofThreads)
+                return dataStruct
+                
+            })
             
-        })
-
+            plotDataLarge.append(plotDataR)
+            
+        }
+        
         for i in plotDataLarge{
             plotData.append((i.r, i.calculatedData.integral))
             print(i.calculatedData.integral)
         }
-//        plotDataModel.appendData(dataPoint: dataToPlot)
+        plotDataModel.appendData(dataPoint: dataToPlot)
         return plotData
+        
+
+    }
+    
+    func drawOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, stepSize: Double){
+        
+        let drawMass = overlap.calculateOverlapPoints(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: R, maximumGuesses: maximumGuesses, psi1: overlap.psi1s, psi2: overlap.psi1s)
+        
+        belowPointsToDraw = drawMass.pointsBelow
+        abovePointsToDraw = drawMass.pointsAbove
+        probabilitiesBelow = drawMass.probabilityBelow
+        probabilitiesAbove = drawMass.probabilityAbove
+        
     }
    
     func calculateRealValue(R: Double, stepSize: Double) -> [(Double, Double)]{
@@ -310,13 +377,33 @@ struct ContentView: View {
         return tempData
     }
     
-    
+//    func selector(function1Str: String, function2Str: String){
+//        switch function1Str{
+//            case "1s" :
+//            function1 = overlap.psi1s
+//            case "2px" :
+//            function1 = overlap.psi2px
+//        default:
+//            function1 = overlap.psi1s
+//        }
+//
+//        switch function2Str{
+//            case "1s" :
+//            function2 = overlap.psi1s
+//
+//            case "2px" :
+//            function2 = overlap.psi2px
+//        default:
+//            function2 = overlap.psi1s
+//        }
+//
+//    }
     
 }
 
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}

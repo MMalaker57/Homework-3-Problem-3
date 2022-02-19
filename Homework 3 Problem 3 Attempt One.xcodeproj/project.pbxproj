@@ -15,6 +15,10 @@
 		522DF56027BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
 		522DF56127BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
 		522DF56227BEDF34009B33D9 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522DF55E27BEDF34009B33D9 /* BoundingBox.swift */; };
+		52A81D9E27C09BFE00312229 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A81D9D27C09BFE00312229 /* DrawingView.swift */; };
+		52A81D9F27C09BFE00312229 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A81D9D27C09BFE00312229 /* DrawingView.swift */; };
+		52A81DA027C09BFE00312229 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A81D9D27C09BFE00312229 /* DrawingView.swift */; };
+		52A81DA127C09BFE00312229 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A81D9D27C09BFE00312229 /* DrawingView.swift */; };
 		D2384D8525BFC5D30082D98A /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D8425BFC5D30082D98A /* Tests_iOS.swift */; };
 		D2384D9025BFC5D30082D98A /* Tests_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D8F25BFC5D30082D98A /* Tests_macOS.swift */; };
 		D2384D9225BFC5D30082D98A /* Test_PlotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2384D6925BFC5D20082D98A /* Test_PlotApp.swift */; };
@@ -81,6 +85,7 @@
 /* Begin PBXFileReference section */
 		522DF55927BEBC1E009B33D9 /* OverlapIntegral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapIntegral.swift; sourceTree = "<group>"; };
 		522DF55E27BEDF34009B33D9 /* BoundingBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundingBox.swift; sourceTree = "<group>"; };
+		52A81D9D27C09BFE00312229 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		D2384D6925BFC5D20082D98A /* Test_PlotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test_PlotApp.swift; sourceTree = "<group>"; };
 		D2384D6A25BFC5D20082D98A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D2384D6B25BFC5D30082D98A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -170,6 +175,7 @@
 				D2384DB025BFC5E60082D98A /* CalculatePlotData.swift */,
 				D2384DB125BFC5E60082D98A /* TextView.swift */,
 				522DF55E27BEDF34009B33D9 /* BoundingBox.swift */,
+				52A81D9D27C09BFE00312229 /* DrawingView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -404,6 +410,7 @@
 				D2384DC825BFC5E60082D98A /* operators.swift in Sources */,
 				522DF55F27BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384DC425BFC5E60082D98A /* TextExportDocument.swift in Sources */,
+				52A81D9E27C09BFE00312229 /* DrawingView.swift in Sources */,
 				522DF55A27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC025BFC5E60082D98A /* PlotDataClass.swift in Sources */,
 				D2384DB825BFC5E60082D98A /* CorePlot.swift in Sources */,
@@ -423,6 +430,7 @@
 				D2384DC925BFC5E60082D98A /* operators.swift in Sources */,
 				522DF56027BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384DC525BFC5E60082D98A /* TextExportDocument.swift in Sources */,
+				52A81D9F27C09BFE00312229 /* DrawingView.swift in Sources */,
 				522DF55B27BEBC1F009B33D9 /* OverlapIntegral.swift in Sources */,
 				D2384DC125BFC5E60082D98A /* PlotDataClass.swift in Sources */,
 				D2384DB925BFC5E60082D98A /* CorePlot.swift in Sources */,
@@ -440,6 +448,7 @@
 				D2384DBA25BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384DCE25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DCA25BFC5E60082D98A /* operators.swift in Sources */,
+				52A81DA027C09BFE00312229 /* DrawingView.swift in Sources */,
 				522DF56127BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384D8525BFC5D30082D98A /* Tests_iOS.swift in Sources */,
 				D2384DC225BFC5E60082D98A /* PlotDataClass.swift in Sources */,
@@ -458,6 +467,7 @@
 				D2384DBB25BFC5E60082D98A /* CorePlot.swift in Sources */,
 				D2384DCF25BFC5E60082D98A /* CalculatePlotData.swift in Sources */,
 				D2384DCB25BFC5E60082D98A /* operators.swift in Sources */,
+				52A81DA127C09BFE00312229 /* DrawingView.swift in Sources */,
 				522DF56227BEDF34009B33D9 /* BoundingBox.swift in Sources */,
 				D2384D9025BFC5D30082D98A /* Tests_macOS.swift in Sources */,
 				D2384DC325BFC5E60082D98A /* PlotDataClass.swift in Sources */,
