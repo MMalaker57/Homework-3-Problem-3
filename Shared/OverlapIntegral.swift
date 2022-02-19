@@ -195,3 +195,4 @@ class overlapIntegral: NSObject, ObservableObject  {
         return (r/aNaught)*exp(-1.0*r/(2*aNaught))*(0.1767766952966368)*sin(theta)*cos(phi)
     }
 }
+

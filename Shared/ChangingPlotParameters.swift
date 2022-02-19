@@ -22,3 +22,4 @@ class ChangingPlotParameters: NSObject, ObservableObject {
     var title: String = "Plot Title"
     
 }
+
