@@ -111,7 +111,7 @@ class overlapIntegral: NSObject, ObservableObject  {
                     
                     point.xCoord = Double.random(in: lowerXBound...upperXBound)
                     point.yCoord = Double.random(in: lowerYBound...upperYBound)
-                    point.zCoord = Double.random(in: lowerZBound...upperZBound)
+                    point.zCoord = 0.0
 //                    print(point)
                 
                 
@@ -133,14 +133,14 @@ class overlapIntegral: NSObject, ObservableObject  {
                     
                     let probabilityAtPoint = psi1(self.convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord)) * psi2(self.convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord))
                 
-                var vertical = 0.0
-                if point.yCoord < 0.0{
-                    vertical = -1.0*sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
-                    
-                }
-                else{
-                    vertical = sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
-                }
+                var vertical = point.yCoord
+//                if point.yCoord < 0.0{
+//                    vertical = -1.0*sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
+//
+//                }
+//                else{
+//                    vertical = sqrt(pow(point.yCoord, 2)+pow(point.zCoord, 2))
+//                }
                 if probabilityAtPoint < 0{
                     pointsBelow.append((xPoint: point.xCoord, yPoint: vertical))
                     probabilityBelow.append(probabilityAtPoint)

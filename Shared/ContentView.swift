@@ -57,7 +57,7 @@ struct ContentView: View {
     @State var lowerZBoundString = ""
     @State var upperZBoundDouble = 0.0
     @State var upperZBoundString = ""
-    @State var stepSizeDouble = 0.0
+    @State var stepSizeDouble = 0.1
     @State var stepSizeString = ""
     
     @State var rDouble = 0.0
@@ -82,21 +82,23 @@ struct ContentView: View {
         
 
         
-        HStack{
-            Divider()
-                drawingView(redLayer:$belowPointsToDraw, blueLayer: $abovePointsToDraw)
-                    .padding()
-                    .aspectRatio(1, contentMode: .fit)
-                    .drawingGroup()
-                // Stop the window shrinking to zero.
-                Spacer()
+        HStack{	
+            // Stop the window shrinking to zero.
+                
             CorePlot(dataForPlot: $plotData.plotArray[selector].plotData, changingPlotParameters: $plotData.plotArray[selector].changingPlotParameters)
                 .setPlotPadding(left: 10)
                 .setPlotPadding(right: 10)
                 .setPlotPadding(top: 10)
                 .setPlotPadding(bottom: 10)
                 .padding()
+
+            Divider()
             
+            drawingView(redLayer:$belowPointsToDraw, blueLayer: $abovePointsToDraw, upperX: $upperXBoundDouble, upperY: $upperYBoundDouble)
+                .padding()
+                .aspectRatio(1, contentMode: .fit)
+                .drawingGroup()
+           
             Divider()
             
             VStack{
@@ -354,6 +356,8 @@ struct ContentView: View {
     }
     
     func drawOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, stepSize: Double){
+        belowPointsToDraw.removeAll()
+        abovePointsToDraw.removeAll()
         
         let drawMass = overlap.calculateOverlapPoints(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: R, maximumGuesses: maximumGuesses, psi1: overlap.psi1s, psi2: overlap.psi1s)
         

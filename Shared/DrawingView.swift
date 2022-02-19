@@ -11,16 +11,19 @@ struct drawingView: View {
     
     @Binding var redLayer : [(xPoint: Double, yPoint: Double)]
     @Binding var blueLayer : [(xPoint: Double, yPoint: Double)]
+    @Binding var upperX: Double
+    @Binding var upperY: Double
+
     
     var body: some View {
     
         
         ZStack{
         
-            drawIntegral(drawingPoints: redLayer )
+            drawIntegral(upperXBound: upperX, upperYBound: upperY, drawingPoints: redLayer)
                 .stroke(Color.red)
             
-            drawIntegral(drawingPoints: blueLayer )
+            drawIntegral(upperXBound: upperX, upperYBound: upperY, drawingPoints: blueLayer)
                 .stroke(Color.blue)
         }
         .background(Color.white)
@@ -31,13 +34,15 @@ struct drawingView: View {
 
 struct DrawingView_Previews: PreviewProvider {
     
-    @State static var redLayer : [(xPoint: Double, yPoint: Double)] = [(-0.5, 0.5), (0.5, 0.5), (0.0, 0.0), (0.0, 1.0)]
-    @State static var blueLayer : [(xPoint: Double, yPoint: Double)] = [(-0.5, -0.5), (0.5, -0.5), (0.9, 0.0)]
+    @State static var redLayer : [(xPoint: Double, yPoint: Double)] = [(-5.0, 5.0), (5.0, 5.0), (0.0, 0.0), (0.0, 5.0)]
+    @State static var upperX: Double = 10.0
+    @State static var upperY: Double = 10.0
+    @State static var blueLayer : [(xPoint: Double, yPoint: Double)] = [(-5.0, -5.0), (5.0, -5.0), (4.5, 0.0)]
     
     static var previews: some View {
        
         
-        drawingView(redLayer: $redLayer, blueLayer: $blueLayer)
+        drawingView(redLayer: $redLayer, blueLayer: $blueLayer, upperX: $upperX, upperY: $upperY)
             .aspectRatio(1, contentMode: .fill)
             //.drawingGroup()
            
@@ -48,7 +53,8 @@ struct DrawingView_Previews: PreviewProvider {
 
 struct drawIntegral: Shape {
     
-   
+    var upperXBound: Double
+    var upperYBound: Double
     let smoothness : CGFloat = 1.0
     var drawingPoints: [(xPoint: Double, yPoint: Double)]  ///Array of tuples
     
@@ -56,8 +62,11 @@ struct drawIntegral: Shape {
         
                
         // draw from the center of our rectangle
+        
+        
         let center = CGPoint(x: rect.width / 2, y: rect.height / 2)
-        let scale = rect.width
+        let hScale = rect.width/(2.5*upperXBound)
+        let vScale = rect.height/(2.5*upperYBound)
         
 
         // Create the Path for the display
@@ -65,12 +74,16 @@ struct drawIntegral: Shape {
         var path = Path()
         
         for item in drawingPoints {
-            
-            path.addRect(CGRect(x: item.xPoint*Double(scale), y: -1.0*item.yPoint*Double(scale)+Double(rect.height), width: 1.0 , height: 1.0))
-            
+
+            path.addRect(CGRect(x: item.xPoint*Double(hScale)+center.x, y: item.yPoint*Double(vScale)+center.y, width: 2.0, height: 2.0 ))
+//            path.addLine(to: CGPoint(x: item.xPoint*Double(hScale), y: item.yPoint*Double(vScale)))
+
         }
+        
+        
 
-
+        
         return (path)
     }
 }
+
