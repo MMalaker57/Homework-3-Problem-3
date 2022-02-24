@@ -359,20 +359,29 @@ class overlapIntegral: NSObject, ObservableObject {
         print("pixelData is \(pixelData.count) long")
         //Here, we have an array of UNIQUE points about to be assigned a. RGBA value. A=255, but color depends on sign.
         //Negative p are red. Positive are blue
-        for i in pixelData{
-            
-            if i.probability <= 0{
-                rgbaData.append(Float(abs((i.probability * pscale))))
-                rgbaData.append(5)
-                rgbaData.append(5)
-                rgbaData.append(0.5)
-            }
-            if i.probability >= 0{
-                rgbaData.append(5)
-                rgbaData.append(5)
-                rgbaData.append(Float(abs((i.probability * pscale))))
-                rgbaData.append(0.5)
-            }
+//        for i in pixelData{
+//
+//            if i.probability <= 0{
+//                rgbaData.append(Float(abs((i.probability * pscale))))
+//                rgbaData.append(5)
+//                rgbaData.append(5)
+//                rgbaData.append(0.5)
+//            }
+//            if i.probability >= 0{
+//                rgbaData.append(5)
+//                rgbaData.append(5)
+//                rgbaData.append(Float(abs((i.probability * pscale))))
+//                rgbaData.append(0.5)
+//            }
+//        }
+        
+        for i in stride(from: 1, through: 360000, by: 1){
+            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
+            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
+            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
+            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
+//            rgbaData.append(0)
+//            rgbaData.append(0.5)
         }
         return rgbaData
     }
