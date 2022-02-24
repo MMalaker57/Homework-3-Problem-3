@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct Test_PlotApp: App {
+
+    
+
+    
     
     @StateObject var plotData = PlotClass()
     @ObservedObject var overlap = overlapIntegral()
@@ -16,7 +20,7 @@ struct Test_PlotApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                ContentView(function1: overlap.psi1s, function2: overlap.psi1s)
+                ContentView(function1: overlap.psi1s, function2: overlap.psi1s, image: overlap.createCG().0, imageNS: overlap.createCG().1)
                     .environmentObject(plotData)
                     .tabItem {
                         Text("Plot")

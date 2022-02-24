@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CorePlot
+import Foundation
 import simd
 
 typealias plotDataType = [CPTScatterPlotField : Double]
@@ -76,6 +77,8 @@ struct ContentView: View {
     @State var abovePointsToDraw: [(xPoint: Double, yPoint: Double)] = []
     @State var probabilitiesBelow: [Double] = []
     @State var probabilitiesAbove: [Double] = []
+    @State var image: CGImage
+    @State var imageNS: NSImage
     
     
     var body: some View {
@@ -94,10 +97,11 @@ struct ContentView: View {
 
             Divider()
             
-            drawingView(redLayer:$belowPointsToDraw, blueLayer: $abovePointsToDraw, upperX: $upperXBoundDouble, upperY: $upperYBoundDouble)
-                .padding()
-                .aspectRatio(1, contentMode: .fit)
-                .drawingGroup()
+//            drawingView(redLayer:$belowPointsToDraw, blueLayer: $abovePointsToDraw, upperX: $upperXBoundDouble, upperY: $upperYBoundDouble)
+//                .padding()
+//                .aspectRatio(1, contentMode: .fit)
+//                .drawingGroup()
+            Image(nsImage: imageNS)
            
             Divider()
             
@@ -172,7 +176,7 @@ struct ContentView: View {
                     
                     Task.init{
                     self.selector = 0
-                        plotDataList = await self.calculateOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble); realDataList = self.calculateRealValue(R: rDouble, stepSize: stepSizeDouble);self.drawOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble)
+                        self.selectorFunc(function1Str: func1String, function2Str: func2String);plotDataList = await self.calculateOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble); realDataList = self.calculateRealValue(R: rDouble, stepSize: stepSizeDouble);self.drawOverlap(lowerXBound: lowerXBoundDouble, upperXBound: upperXBoundDouble, lowerYBound: lowerYBoundDouble, upperYBound: upperYBoundDouble, lowerZBound: lowerZBoundDouble, upperZBound: upperZBoundDouble, R: rDouble, maximumGuesses: maximumGuesses, stepSize: stepSizeDouble)
                     }
                 })
                 .padding()
@@ -184,6 +188,10 @@ struct ContentView: View {
                         self.plotData.objectWillChange.send()
                     }
                 })
+//                Button("Apply", action: {
+//                        self.selector(function1Str: func1String, function2Str: func2String)
+//
+//                })
                 Button("Draw Real", action: {
                     
                     Task.init{
@@ -311,7 +319,7 @@ struct ContentView: View {
                 var dataStruct: (r: Double, calculatedData: (integral: Double, belowPoints: [(Double, Double, Double)], abovePoints: [(Double, Double, Double)]))
                 for i in stride(from: 1, through: NumberofThreads, by: 1){
                     taskGroup.addTask{
-                        let dataSlice = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: r, maximumGuesses: guessesPerThread, psi1: overlap.psi1s, psi2: overlap.psi1s)
+                        let dataSlice = await overlap.calculate1sOverlap(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: r, maximumGuesses: guessesPerThread, psi1: function1, psi2: function2)
                         return((r: r, calculatedData: dataSlice))
                     }
                 }
@@ -359,13 +367,20 @@ struct ContentView: View {
         belowPointsToDraw.removeAll()
         abovePointsToDraw.removeAll()
         
-        let drawMass = overlap.calculateOverlapPoints(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: R, maximumGuesses: maximumGuesses, psi1: overlap.psi1s, psi2: overlap.psi1s)
+        let drawMass = overlap.calculateOverlapPointsOutputData(lowerXBound: lowerXBound, upperXBound: upperXBound, lowerYBound: lowerYBound, upperYBound: upperYBound, lowerZBound: lowerZBound, upperZBound: upperZBound, R: R, maximumGuesses: 10000, psi1: function1, psi2: function2)
+        print("drawmass")
+        print(drawMass.count)
+        let dataFormatted = overlap.formatData(data: drawMass)
+        print("data")
+        print(dataFormatted.count)
+        let pixelData = Data(fromArray: dataFormatted)
+        let cfData = NSData(data: pixelData) as CFData
+        let provider = CGDataProvider(data: cfData)!
+        let info: CGBitmapInfo = [.byteOrder32Little, .floatComponents]
+        let cg = CGImage(width: 600, height: 600, bitsPerComponent: 32, bitsPerPixel: 96, bytesPerRow: (96/8)*600, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: info, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
+        image = cg
         
-        belowPointsToDraw = drawMass.pointsBelow
-        abovePointsToDraw = drawMass.pointsAbove
-        probabilitiesBelow = drawMass.probabilityBelow
-        probabilitiesAbove = drawMass.probabilityAbove
-        
+        imageNS = NSImage(cgImage: image, size: .zero)
     }
    
     func calculateRealValue(R: Double, stepSize: Double) -> [(Double, Double)]{
@@ -381,27 +396,50 @@ struct ContentView: View {
         return tempData
     }
     
-//    func selector(function1Str: String, function2Str: String){
-//        switch function1Str{
-//            case "1s" :
-//            function1 = overlap.psi1s
-//            case "2px" :
-//            function1 = overlap.psi2px
-//        default:
-//            function1 = overlap.psi1s
-//        }
-//
-//        switch function2Str{
-//            case "1s" :
-//            function2 = overlap.psi1s
-//
-//            case "2px" :
-//            function2 = overlap.psi2px
-//        default:
-//            function2 = overlap.psi1s
-//        }
-//
-//    }
+    func selectorFunc(function1Str: String, function2Str: String){
+        switch function1Str{
+            case "1s" :
+            function1 = overlap.psi1s
+            print("1s")
+            case "2px" :
+            function1 = overlap.psi2px
+            print("2px")
+        default:
+            function1 = overlap.psi1s
+        print("default")
+        }
+
+        switch function2Str{
+            case "1s" :
+            function2 = overlap.psi1s
+            print("1s")
+            case "2px" :
+            function2 = overlap.psi2px
+            print("2px")
+        default:
+            function2 = overlap.psi1s
+            print("default")
+        }
+
+    }
+    
+    
+
+    
+    func returningColorCGImage(data: [Float], width: Int, height: Int, rowBytes: Int) -> CGImage{
+        let pixelDataAsData = Data(fromArray: data)
+        let cfdata = NSData(data: pixelDataAsData) as CFData
+        
+        let provider = CGDataProvider(data: cfdata)!
+        
+        let bitmapInfo: CGBitmapInfo = [
+            .byteOrder32Little,
+            .floatComponents]
+              
+        let pixelCGImage = CGImage(width:  width, height: height, bitsPerComponent: 32, bitsPerPixel: 96, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
+        return pixelCGImage
+    }
+    
     
 }
 
@@ -411,5 +449,16 @@ struct ContentView: View {
 //        ContentView()
 //    }
 //}
+extension Data {
 
+    init<T>(fromArray values: [T]) {
+        self = values.withUnsafeBytes { Data($0) }
+    }
+
+    func toArray<T>(type: T.Type) -> [T] where T: ExpressibleByIntegerLiteral {
+        var array = Array<T>(repeating: 0, count: self.count/MemoryLayout<T>.stride)
+        _ = array.withUnsafeMutableBytes { copyBytes(to: $0) }
+        return array
+    }
+}
 
