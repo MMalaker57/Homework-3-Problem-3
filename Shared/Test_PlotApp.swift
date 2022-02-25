@@ -25,11 +25,7 @@ struct Test_PlotApp: App {
                     .tabItem {
                         Text("Plot")
                     }
-                TextView()
-                    .environmentObject(plotData)
-                    .tabItem {
-                        Text("Text")
-                    }
+                    
                             
                             
             }

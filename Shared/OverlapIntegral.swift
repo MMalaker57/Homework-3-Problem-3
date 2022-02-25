@@ -32,8 +32,8 @@ class overlapIntegral: NSObject, ObservableObject {
             for j in stride(from: 1, through: 600, by: 1){
                 imageData.append(1)
                 imageData.append(1)
-                imageData.append(1)
-                imageData.append(1)
+                imageData.append(30)
+
             }
         }
         let pixelData = Data(fromArray: imageData)
@@ -75,22 +75,9 @@ class overlapIntegral: NSObject, ObservableObject {
                     point.zCoord = Double.random(in: lowerZBound...upperZBound)
 //                    print(point)
                 
-                
-                    var xtemp1 = 0.0
-                    var xtemp2 = 0.0
-                
-                
-                    if(point.xCoord > 0){
-                        xtemp1 = (R/2) + point.xCoord
-                        xtemp2 = (R/2) - point.xCoord
-                    }
-                    else{
-                        if(point.xCoord < 0){
-                            xtemp1 = (R/2) - point.xCoord
-                            xtemp2 = (R/2) + point.xCoord
-                            
-                        }
-                    }
+
+                    var xtemp1 = point.xCoord + (R/2)
+                    var xtemp2 = point.xCoord - (R/2)
                     
                 let psi1Coords =  convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord)
                 let psi2Coords =  convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord)
@@ -130,7 +117,7 @@ class overlapIntegral: NSObject, ObservableObject {
         var probabilityAbove: [Double] = []
         
         var data: (probabilityBelow: [Double], probabilityAbove: [Double], pointsBelow: [(xPoint: Double, yPoint: Double)], pointsAbove: [(xPoint: Double, yPoint: Double)])
-            for i in stride(from: 1, through: 10000, by: 1){
+            for i in stride(from: 1, through: 1000000, by: 1){
                 
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     
@@ -195,7 +182,7 @@ class overlapIntegral: NSObject, ObservableObject {
         var probabilityAbove: [Double] = []
         
         var data: [(x: Double, y: Double, probability: Double)] = []
-            for i in stride(from: 1, through: 10000, by: 1){
+            for i in stride(from: 1, through: 1000000, by: 1){
                 
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     
@@ -204,22 +191,10 @@ class overlapIntegral: NSObject, ObservableObject {
                     point.zCoord = 0.0
 //                    print(point)
                 
-                
-                    var xtemp1 = 0.0
-                    var xtemp2 = 0.0
-                
-                
-                    if(point.xCoord > 0){
-                        xtemp1 = (R/2) + point.xCoord
-                        xtemp2 = (R/2) - point.xCoord
-                    }
-                    else{
-                        if(point.xCoord < 0){
-                            xtemp1 = (R/2) - point.xCoord
-                            xtemp2 = (R/2) + point.xCoord
-                            
-                        }
-                    }
+                    var xtemp1 = point.xCoord + (R/2)
+                    var xtemp2 = point.xCoord - (R/2)
+                    
+            
                 let psi1Coords =  convertToSpherical(x: xtemp1, y: point.yCoord, z: point.zCoord)
                 let psi2Coords =  convertToSpherical(x: xtemp2, y: point.yCoord, z: point.zCoord)
                 
@@ -246,20 +221,19 @@ class overlapIntegral: NSObject, ObservableObject {
     func convertToSpherical(x: Double, y: Double, z: Double) -> (r: Double, phi: Double, theta: Double){
         let r = sqrt(pow(x,2)+pow(y,2)+pow(z,2))
         let phi = atan2(y, x)
-        
-        let theta = acos(z/r)
+        let theta = atan2(sqrt(pow(x,2.0)+pow(y,2.0)),z)
         return((r: r, phi: phi, theta: theta))
         
     }
     func psi1s(r: Double, phi: Double, theta: Double)->Double{
 //        print("Psi1s Called")
-        let aNaught = 0.529
+        let aNaught = 0.529177210903
         return exp(-1.0*r/aNaught)
     }
     
     func psi2px(r: Double, phi: Double, theta: Double)->Double{
 //        print("Psi2px Called")
-        let aNaught = 0.529
+        let aNaught = 0.529177210903
         //we have a constant multiple of 1/4sqrt(2), but calculating that each time is dumb. Double precision is just shy of 16 decimal places, so I've pre-calculated the value of 1/4sqrt(2) to that places.
         //Ideally, it'd be best to apply this factor at the END of the integral ( it factors out ), but when the function is selectable, that is not really an option.
         //There is ALWAYS a factor of 1/sqrt(pi*a^3), though
@@ -276,12 +250,15 @@ class overlapIntegral: NSObject, ObservableObject {
         for i in data{
             xs.append(i.x)
             ys.append(i.y)
-            ys.append(i.probability)
+            ps.append(i.probability)
         }
         let maxX = xs.max() ?? 1.0
-        print(maxX)
+        
         let maxY = ys.max() ?? 1.0
+        let minX = xs.min() ?? 1.0
+        let minY = ys.min() ?? 1.0
         let maxP = ps.max() ?? 1.0
+        print("maxX = \(maxX), minX = \(minX), maxY = \(maxY), minY = \(minY)")
         
         
         var pixelData: [(xPixel: Int, yPixel: Int, probability: Double)] = []
@@ -289,19 +266,19 @@ class overlapIntegral: NSObject, ObservableObject {
         var samePixels: [(xPixel: Int, yPixel: Int, probability: Double)] = []
     
         //First we need to convert each X and Y coordinate to pixels
-        let width = 600.0
-        let height = 600.0
-        let pscale = 255.0/maxP
-        print(pscale)
-        let hscale = Double((width/2.0)/maxX)
+        let width = 601.0
+        let height = 601.0
+        let pscale = 127/maxP
+        print("pscale = \(pscale)")
+        let hscale = Double(width/(maxX-minX))
         print(hscale)
-        let vscale = Double((height/2.0)/maxY)
+        let vscale = Double(height/(maxY-minY))
         print(vscale)
         
         //assign to pixel. We can only have one pixel at each dimension, which will end up being the sum of P at that pixel
         
         for i in data{
-            pixelData2.append((xPixel: Int(hscale*i.x+width/2.0), yPixel: Int(vscale*i.y+height/2.0), probability: i.probability))
+            pixelData2.append((xPixel: Int((hscale*i.x+(width/2.0))), yPixel: Int((vscale*i.y+(height/2.0))), probability:(i.probability)))
         }
         
         var nextIsNew = false
@@ -311,17 +288,22 @@ class overlapIntegral: NSObject, ObservableObject {
         
         //We need to make sure we have data at each pixel, otherwise our formatted data will not have enough pixels
         
-        for i in stride(from: 1, through: 600, by: 1){
-            for j in stride(from: 1, through: 600, by: 1){
+        
+        for i in stride(from: 0, through: 600, by: 1){
+            for j in stride(from: 0, through: 600, by: 1){
                 pixelData2.append((xPixel: i, yPixel: j, probability: 0.0))
             }
 
         }
+        
         pixelData2.sort{
             ($0.xPixel, $0.yPixel, $0.probability) <
             (($1.xPixel, $1.yPixel, $1.probability))
         }
         print("pixelData2 is \(pixelData2.count) long")
+        
+
+        
         for i in stride(from: 0, to: pixelData2.count-1, by: 1){
             samePixels.append(pixelData2[i])
 //            print("current x is: \(pixelData2[i].xPixel), next x is: \(pixelData2[i+1].xPixel), current y is: \(pixelData2[i].yPixel), next y is: \(pixelData2[i+1].yPixel)")
@@ -341,8 +323,31 @@ class overlapIntegral: NSObject, ObservableObject {
         }
         
         //sort pixelData
-        //PixelData does not have data for each pixel, so we need to add dummy data
+        //PixelData does not have data for each pixel, so we need to add dummy data at x,y without data
         
+//        var hasBoth = false
+        
+        
+//        for i in stride(from: 1, through: 600, by: 1){
+//            for j in stride(from: 1, through: 600, by: 1){
+//                for k in pixelData{
+//                    if (k.xPixel == i && k.yPixel == j){
+//                        hasBoth = true
+//                    }
+//
+//                }
+//
+//                if hasBoth == false{
+//                    pixelData.append((xPixel: i, yPixel: j, probability: 0.0))
+//                }
+//                hasBoth = false
+//            }
+//
+//        }
+        if pixelData.count == 361200{
+            
+            pixelData.append((xPixel: 601, yPixel: 601, probability: 0.0))
+        }
         
         pixelData.sort{
             ($0.xPixel, $0.yPixel, $0.probability) <
@@ -350,39 +355,52 @@ class overlapIntegral: NSObject, ObservableObject {
         }
         
         print("pixelData is \(pixelData.count) long")
-        if(pixelData.count > 360000){
-        for i in stride(from: pixelData.count, through: 360000, by: 1){
-            pixelData.remove(at: i)
+        
+        
+        
+        for i in stride(from: 0, to: pixelData.count-2, by: 1){
+
+                    if pixelData[i].xPixel == pixelData[i+1].xPixel && pixelData[i].yPixel == pixelData[i+1].yPixel{
+//                        print("Duplicate point at x= \(pixelData[i].xPixel), y=\(pixelData[i].yPixel)")
+                    }
+//            print("x: \(pixelData[i].xPixel), y: \(pixelData[i].yPixel)")
         }
-        }
+        
         
         print("pixelData is \(pixelData.count) long")
         //Here, we have an array of UNIQUE points about to be assigned a. RGBA value. A=255, but color depends on sign.
         //Negative p are red. Positive are blue
-//        for i in pixelData{
-//
-//            if i.probability <= 0{
-//                rgbaData.append(Float(abs((i.probability * pscale))))
-//                rgbaData.append(5)
-//                rgbaData.append(5)
-//                rgbaData.append(0.5)
-//            }
-//            if i.probability >= 0{
-//                rgbaData.append(5)
-//                rgbaData.append(5)
-//                rgbaData.append(Float(abs((i.probability * pscale))))
-//                rgbaData.append(0.5)
-//            }
-//        }
-        
-        for i in stride(from: 1, through: 360000, by: 1){
-            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
-            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
-            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
-            rgbaData.append(Float.random(in: 1.0 ..< 254.0))
-//            rgbaData.append(0)
-//            rgbaData.append(0.5)
+        for i in pixelData{
+            
+//            print("color=\((abs((i.probability * pscale))))")
+            if i.probability == 0{
+                rgbaData.append(50)
+                rgbaData.append(50)
+                rgbaData.append(50)
+            }
+            if i.probability < 0{
+                rgbaData.append(0)
+                rgbaData.append(0)
+                rgbaData.append(Float(abs((i.probability) * pscale)))
+                                
+            }
+            if i.probability > 0{
+                
+                rgbaData.append(Float(abs((i.probability) * pscale)))
+                rgbaData.append(0)
+                rgbaData.append(0)
+                
+            }
         }
+        
+//        for i in stride(from: 1, through: 360000, by: 1){
+//            rgbaData.append(50)
+//            rgbaData.append(50)
+//            rgbaData.append(0.8)
+////            rgbaData.append(0.5)
+////            rgbaData.append(0)
+////            rgbaData.append(0.5)
+//        }
         return rgbaData
     }
     

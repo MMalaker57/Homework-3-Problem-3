@@ -46,24 +46,24 @@ struct ContentView: View {
     @State var selector = 0
 
     //BEGIN VARAIBLE BLOCK
-    @State var lowerXBoundDouble = 0.0
+    @State var lowerXBoundDouble = -10.0
     @State var lowerXBoundString = ""
-    @State var upperXBoundDouble = 0.0
+    @State var upperXBoundDouble = 10.0
     @State var upperXBoundString = ""
-    @State var lowerYBoundDouble = 0.0
+    @State var lowerYBoundDouble = -10.0
     @State var lowerYBoundString = ""
-    @State var upperYBoundDouble = 0.0
+    @State var upperYBoundDouble = 10.0
     @State var upperYBoundString = ""
-    @State var lowerZBoundDouble = 0.0
+    @State var lowerZBoundDouble = -10.0
     @State var lowerZBoundString = ""
-    @State var upperZBoundDouble = 0.0
+    @State var upperZBoundDouble = 10.0
     @State var upperZBoundString = ""
-    @State var stepSizeDouble = 0.1
+    @State var stepSizeDouble = 0.2
     @State var stepSizeString = ""
     
-    @State var rDouble = 0.0
+    @State var rDouble = 2.0
     @State var rString = ""
-    @State var maximumGuesses: UInt64 = 1
+    @State var maximumGuesses: UInt64 = 50000
     @State var maximumGuessesString = ""
     
     @State var plotDataList: [(Double, Double)] = []
@@ -377,7 +377,7 @@ struct ContentView: View {
         let cfData = NSData(data: pixelData) as CFData
         let provider = CGDataProvider(data: cfData)!
         let info: CGBitmapInfo = [.byteOrder32Little, .floatComponents]
-        let cg = CGImage(width: 600, height: 600, bitsPerComponent: 32, bitsPerPixel: 96, bytesPerRow: (96/8)*600, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: info, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
+        let cg = CGImage(width: 601, height: 601, bitsPerComponent: 32, bitsPerPixel: 96, bytesPerRow: (96/8)*601, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: info, provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent)!
         image = cg
         
         imageNS = NSImage(cgImage: image, size: .zero)
