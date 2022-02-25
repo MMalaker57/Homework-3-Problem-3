@@ -79,12 +79,13 @@ struct ContentView: View {
     @State var probabilitiesAbove: [Double] = []
     @State var image: CGImage
     @State var imageNS: NSImage
+    @State var integralOutputString = ""
     
     
     var body: some View {
         
 
-        
+        VStack{
         HStack{	
             // Stop the window shrinking to zero.
                 
@@ -204,6 +205,9 @@ struct ContentView: View {
             }
             }
         }
+            TextEditor(text: $integralOutputString)
+            
+        }
             
 
             
@@ -301,6 +305,7 @@ struct ContentView: View {
 //BEGIN FUNCTION BLOCK
     func calculateOverlap(lowerXBound: Double, upperXBound: Double,lowerYBound: Double, upperYBound: Double,lowerZBound: Double, upperZBound: Double, R: Double, maximumGuesses: UInt64, stepSize: Double) async -> [(R: Double, integral: Double)]{
         plotDataList.removeAll()
+        integralOutputString = ""
         var dataToPlot: [plotDataType] = []
         var plotData: [(Double, Double)] = []
         let NumberofThreads: UInt64 = 4
@@ -355,6 +360,7 @@ struct ContentView: View {
         
         for i in plotDataLarge{
             plotData.append((i.r, i.calculatedData.integral))
+            integralOutputString.append("Integral value at R= \(i.r) = \(i.calculatedData.integral) \n")
             print(i.calculatedData.integral)
         }
         plotDataModel.appendData(dataPoint: dataToPlot)
