@@ -117,7 +117,7 @@ class overlapIntegral: NSObject, ObservableObject {
         var probabilityAbove: [Double] = []
         
         var data: (probabilityBelow: [Double], probabilityAbove: [Double], pointsBelow: [(xPoint: Double, yPoint: Double)], pointsAbove: [(xPoint: Double, yPoint: Double)])
-            for i in stride(from: 1, through: 1000000, by: 1){
+            for i in stride(from: 1, through: 10000000, by: 1){
                 
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     
@@ -182,7 +182,7 @@ class overlapIntegral: NSObject, ObservableObject {
         var probabilityAbove: [Double] = []
         
         var data: [(x: Double, y: Double, probability: Double)] = []
-            for i in stride(from: 1, through: 1000000, by: 1){
+            for i in stride(from: 1, through: 10000000, by: 1){
                 
                     var point = (xCoord: 0.0, yCoord: 0.0, zCoord: 0.0)
                     
@@ -268,7 +268,7 @@ class overlapIntegral: NSObject, ObservableObject {
         //First we need to convert each X and Y coordinate to pixels
         let width = 601.0
         let height = 601.0
-        let pscale = 127/maxP
+        let pscale = 1/abs(log2(maxP))
         print("pscale = \(pscale)")
         let hscale = Double(width/(maxX-minX))
         print(hscale)
@@ -374,19 +374,34 @@ class overlapIntegral: NSObject, ObservableObject {
             
 //            print("color=\((abs((i.probability * pscale))))")
             if i.probability == 0{
-                rgbaData.append(50)
-                rgbaData.append(50)
-                rgbaData.append(50)
+                rgbaData.append(1)
+                rgbaData.append(1)
+                rgbaData.append(1)
             }
             if i.probability < 0{
+                
                 rgbaData.append(0)
                 rgbaData.append(0)
-                rgbaData.append(Float(abs((i.probability) * pscale)))
+                var color: Float = Float((log2(abs((i.probability))) + 20.0)*pscale/2)
+                if color < 0.0{
+                    color = Float(0.0)
+                }
+//                if(color > 0.0){
+//                    print("probability: \(i.probability) = \(color)")
+//                }
+                
+                rgbaData.append(color)
                                 
             }
             if i.probability > 0{
-                
-                rgbaData.append(Float(abs((i.probability) * pscale)))
+                var color: Float = Float((log2(abs((i.probability))) + 20.0)*pscale/2)
+                if color < 0.0{
+                    color = Float(0.0)
+                }
+//                if color > 0.0{
+//                print("probability: \(i.probability) = \(color)")
+//                }
+                rgbaData.append(color)
                 rgbaData.append(0)
                 rgbaData.append(0)
                 
